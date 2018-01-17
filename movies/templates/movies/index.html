@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Prime Numbers Movies</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+     <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+    body{margin-top:30px;}
+    .mlist{cursor:pointer;}
+    .mlist:hover{background-color:orange; }
+    a:hover{text-decoration: none;}
+    td:hover{background: orange;}
+    #poster{max-width:150px;}
+    #info p{font-size:15px;}
+    #star{margin:9px;font-size:25px;color:gold;}
+    #rating{font-size:20px;}
+    form{margin-top:20px;}
+    </style>
+  </head>
+  <body>
+    <div class="container text-center">
+    <div class="jumbotron">
+    <h1>Prime Numbers Movies</h1>
+    	<div class="row">
+    	<div class="col-xs-12 col-md-10 col-md-offset-2">
+        <form action="/movies/" method="GET">
+    		<div class="col-xs-10">
+    	      <input id="search" type="text" class="form-control" placeholder="Search movies" name="search">
+        </div>
+    	      <div class="col-xs-2">
+              <button id="submit" type="submit" class=" col-centered form-control">
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+        </form>
+    	</div>
+    	</div>
+      {% if obj %}
+    	<div id="movielist" class="row text-left">
+        <h2>Movies</h2>
+        <ul class="list-group">
+          {% for o in obj %}
+          <a href="/movies/?mid={{o.id}}"><li class="mlist list-group-item">{{o.title}}</li></a>
+          {% endfor %}
+        </ul>
+    	</div>
+      {% endif %}
+      {% if obj1 %}
+      <div id="castlist" class=" text-left jumbotron">
+        <h2 style="margin-left:65px;"><b>{{a}}</b></h2>
+        <div class="row jumbotron">
+        <div class="co-xs-12 ">
+        {% load static %}
+        <div class="col-xs-12 col-md-3">
+        <img id="poster" src="{% static "a.webp" %}" alt="My image"/>
+      </div>
+      <div id="info" class="col-xs-12 col-md-9">
+
+      </div>
+      <i id="star" class="fa fa-star"></i><span id="rating"></span><span id="rateby">/10</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+      <h2>Cast</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Character</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for o in obj1 %}
+            <tr class='clickable-row' data-href='/movies/?cid={{o.cast_id}}&cname={{o.name}}'>
+              <td><a href="/movies/?cid={{o.cast_id}}&cname={{o.name}}">{{o.character}}</a></td><td><a href="/movies/?cid={{o.cast_id}}&cname={{o.name}}">{{o.name}}</td></a>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+      <script>
+          var movie_name = "{{a}}".replace(/:/g, "");
+          console.log('m_name', movie_name);
+          var url = `http://www.omdbapi.com/?t=${movie_name}&apikey=ab4db272`;
+          console.log(url);
+          $.ajax({
+            dataType: "json",
+            url: url,
+            success: function(result){
+              $("#poster").attr("src",result.Poster);
+              var minfo="<p>"+result.Plot+"</p>";
+              minfo+="<h5><b>Director:</b> "+result.Director+"</h5>";
+              minfo+="<h5><b>Writer:</b> "+result.Writer+"</h5>";
+              $("#info").html(minfo);
+              $("#rating").html(result.imdbRating);
+            },
+            error: function(err) {
+              $("#poster").attr("src","https://www.makeupgeek.com/content/wp-content/themes/makeup-geek/images/placeholder-square.svg");
+              $("#info").html("Movie information not available.");
+              $("#rating").html("?");
+            }
+          });
+      </script>
+      {% endif %}
+      {% if obj2 %}
+    	<div id="movielist" class="row text-left">
+        <h2>Movies of {{cname}}</h2>
+        <ul class="list-group">
+          {% for o in obj2 %}
+          <a href="/movies/?mid={{o.mid}}"><li class="mlist list-group-item">{{o.title}}</li></a>
+          {% endfor %}
+        </ul>
+    	</div>
+      {% endif %}
+    </div>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+    });
+    </script>
+  </body>
+</html>
